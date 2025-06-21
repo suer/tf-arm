@@ -144,14 +144,14 @@ func getARM64MemoryDBAlternative(nodeType string) string {
 
 func getMemoryDBX86ToArm64Map() map[string]string {
 	return map[string]string{
-		"db.t3.small":      "db.t4g.small",
-		"db.t3.medium":     "db.t4g.medium",
-		"db.r5.large":      "db.r6g.large",
-		"db.r5.xlarge":     "db.r6g.xlarge",
-		"db.r5.2xlarge":    "db.r6g.2xlarge",
-		"db.r5.4xlarge":    "db.r6g.4xlarge",
-		"db.r5.8xlarge":    "db.r6g.8xlarge",
-		"db.r5.12xlarge":   "db.r6g.12xlarge",
-		"db.r5.16xlarge":   "db.r6g.16xlarge",
+		"db.t3.small":    "db.t4g.small",
+		"db.t3.medium":   "db.t4g.medium",
+		"db.r5.large":    "db.r6g.large",
+		"db.r5.xlarge":   "db.r6g.xlarge",
+		"db.r5.2xlarge":  "db.r6g.2xlarge",
+		"db.r5.4xlarge":  "db.r6g.4xlarge",
+		"db.r5.8xlarge":  "db.r6g.8xlarge",
+		"db.r5.12xlarge": "db.r6g.12xlarge",
+		"db.r5.16xlarge": "db.r6g.16xlarge",
 	}
 }
