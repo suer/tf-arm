@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -12,6 +13,7 @@ import (
 
 var version = "1.0.0"
 var showVersion bool
+var outputFormat string
 
 var rootCmd = &cobra.Command{
 	Use:   "tf-arm [state-file]",
@@ -46,12 +48,13 @@ Supported AWS Services:
 		}
 
 		stateFile := args[0]
-		analyzeStateFile(stateFile)
+		analyzeStateFile(stateFile, outputFormat)
 	},
 }
 
 func init() {
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Show version information")
+	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "text", "Output format (text or json)")
 }
 
 func main() {
@@ -61,22 +64,25 @@ func main() {
 	}
 }
 
-func analyzeStateFile(stateFile string) {
-	fmt.Println("tf-arm: Terraform State ARM64 Analyzer")
-	fmt.Printf("Analyzing Terraform state file: %s\n", stateFile)
-	fmt.Println("")
+type JSONOutput struct {
+	Summary struct {
+		TotalAnalyzed     int     `json:"total_analyzed"`
+		ARM64Compatible   int     `json:"arm64_compatible"`
+		CompatibilityRate float64 `json:"compatibility_rate"`
+	} `json:"summary"`
+	Resources []analyzer.ARM64Analysis `json:"resources"`
+}
 
+func analyzeStateFile(stateFile, format string) {
 	state, err := parser.ParseStateFile(stateFile)
 	if err != nil {
 		fmt.Printf("Error parsing state file: %v\n", err)
 		os.Exit(1)
 	}
 
-	rep := reporter.New()
-	rep.PrintHeader(len(state.Resources))
-
 	var arm64CompatibleCount int
 	var totalAnalyzedCount int
+	var analyses []analyzer.ARM64Analysis
 
 	for _, resource := range state.Resources {
 		if resource.Mode != "managed" {
@@ -87,7 +93,7 @@ func analyzeStateFile(stateFile string) {
 
 		if analysis.Notes != "Resource type not supported for ARM64 compatibility check" {
 			totalAnalyzedCount++
-			rep.PrintAnalysis(analysis)
+			analyses = append(analyses, analysis)
 
 			if analysis.ARM64Compatible {
 				arm64CompatibleCount++
@@ -95,5 +101,34 @@ func analyzeStateFile(stateFile string) {
 		}
 	}
 
-	rep.PrintSummary(totalAnalyzedCount, arm64CompatibleCount)
+	if format == "json" {
+		output := JSONOutput{
+			Resources: analyses,
+		}
+		output.Summary.TotalAnalyzed = totalAnalyzedCount
+		output.Summary.ARM64Compatible = arm64CompatibleCount
+		if totalAnalyzedCount > 0 {
+			output.Summary.CompatibilityRate = float64(arm64CompatibleCount) / float64(totalAnalyzedCount) * 100
+		}
+
+		jsonData, err := json.Marshal(output)
+		if err != nil {
+			fmt.Printf("Error marshaling JSON: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Println(string(jsonData))
+	} else {
+		fmt.Println("tf-arm: Terraform State ARM64 Analyzer")
+		fmt.Printf("Analyzing Terraform state file: %s\n", stateFile)
+		fmt.Println("")
+
+		rep := reporter.New()
+		rep.PrintHeader(len(state.Resources))
+
+		for _, analysis := range analyses {
+			rep.PrintAnalysis(analysis)
+		}
+
+		rep.PrintSummary(totalAnalyzedCount, arm64CompatibleCount)
+	}
 }
