@@ -1,0 +1,102 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "legacy_web_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "t2.micro",
+            "ami": "ami-0abcdef1234567890",
+            "tags": {
+              "Name": "Legacy Web Server"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "legacy_database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "engine": "mysql",
+            "engine_version": "5.7",
+            "instance_class": "db.t2.micro",
+            "allocated_storage": 20,
+            "db_name": "legacydb",
+            "username": "admin"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_elasticache_cluster",
+      "name": "legacy_cache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_id": "legacy-cache",
+            "engine": "redis",
+            "node_type": "cache.t2.micro",
+            "num_cache_nodes": 1
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_opensearch_domain",
+      "name": "legacy_search",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "domain_name": "legacy-search",
+            "cluster_config": [
+              {
+                "instance_type": "i3.large.search",
+                "instance_count": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_codebuild_project",
+      "name": "legacy_build",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "name": "legacy-build",
+            "service_role": "arn:aws:iam::123456789012:role/service-role/codebuild-role",
+            "environment": [
+              {
+                "compute_type": "BUILD_GENERAL1_3XLARGE",
+                "image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+                "type": "LINUX_CONTAINER"
+              }
+            ],
+            "source": [
+              {
+                "type": "GITHUB",
+                "location": "https://github.com/example/repo.git"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

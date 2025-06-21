@@ -1,0 +1,153 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "arm64_web_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "t4g.medium",
+            "ami": "ami-0abcdef1234567890",
+            "tags": {
+              "Name": "ARM64 Web Server"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "arm64_database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "engine": "mysql",
+            "engine_version": "8.0",
+            "instance_class": "db.t4g.micro",
+            "allocated_storage": 20,
+            "db_name": "arm64db",
+            "username": "admin"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_rds_cluster",
+      "name": "arm64_aurora_cluster",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_identifier": "arm64-aurora-cluster",
+            "engine": "aurora-mysql",
+            "engine_version": "8.0.mysql_aurora.3.02.0",
+            "database_name": "arm64aurora",
+            "master_username": "admin"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_elasticache_cluster",
+      "name": "arm64_cache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_id": "arm64-cache",
+            "engine": "redis",
+            "node_type": "cache.t4g.micro",
+            "num_cache_nodes": 1
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_lambda_function",
+      "name": "arm64_lambda",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "function_name": "arm64-lambda-function",
+            "runtime": "python3.9",
+            "handler": "index.handler",
+            "architectures": ["arm64"],
+            "filename": "function.zip"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_eks_node_group",
+      "name": "arm64_worker_nodes",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_name": "arm64-eks-cluster",
+            "node_group_name": "arm64-workers",
+            "instance_types": ["m6g.large"],
+            "ami_type": "AL2_ARM_64",
+            "scaling_config": [
+              {
+                "desired_size": 2,
+                "max_size": 4,
+                "min_size": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_opensearch_domain",
+      "name": "arm64_search",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "domain_name": "arm64-search",
+            "cluster_config": [
+              {
+                "instance_type": "t4g.small.search",
+                "instance_count": 1
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_sagemaker_endpoint_configuration",
+      "name": "arm64_ml_endpoint",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "name": "arm64-ml-endpoint-config",
+            "production_variants": [
+              {
+                "variant_name": "AllTraffic",
+                "model_name": "arm64-model",
+                "instance_type": "ml.m6g.large",
+                "initial_instance_count": 1
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

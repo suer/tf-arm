@@ -14,6 +14,7 @@ import (
 var version = "1.0.0"
 var showVersion bool
 var outputFormat string
+var exitCode int
 
 var rootCmd = &cobra.Command{
 	Use:   "tf-arm [state-file]",
@@ -48,13 +49,14 @@ Supported AWS Services:
 		}
 
 		stateFile := args[0]
-		analyzeStateFile(stateFile, outputFormat)
+		analyzeStateFile(stateFile, outputFormat, exitCode)
 	},
 }
 
 func init() {
 	rootCmd.Flags().BoolVarP(&showVersion, "version", "v", false, "Show version information")
 	rootCmd.Flags().StringVarP(&outputFormat, "format", "f", "text", "Output format (text or json)")
+	rootCmd.Flags().IntVar(&exitCode, "exit-code", 0, "Exit with specified code when ARM64 compatible resources are found")
 }
 
 func main() {
@@ -73,7 +75,7 @@ type JSONOutput struct {
 	Resources []analyzer.ARM64Analysis `json:"resources"`
 }
 
-func analyzeStateFile(stateFile, format string) {
+func analyzeStateFile(stateFile, format string, exitCode int) {
 	state, err := parser.ParseStateFile(stateFile)
 	if err != nil {
 		fmt.Printf("Error parsing state file: %v\n", err)
@@ -130,5 +132,9 @@ func analyzeStateFile(stateFile, format string) {
 		}
 
 		rep.PrintSummary(totalAnalyzedCount, arm64CompatibleCount)
+	}
+
+	if exitCode != 0 && arm64CompatibleCount > 0 {
+		os.Exit(exitCode)
 	}
 }
