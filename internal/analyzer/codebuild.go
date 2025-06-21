@@ -1,0 +1,77 @@
+package analyzer
+
+import "github.com/suer/tf-arm/internal/parser"
+
+type CodeBuildAnalyzer struct{}
+
+func (a *CodeBuildAnalyzer) SupportedType() string {
+	return "aws_codebuild_project"
+}
+
+func (a *CodeBuildAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
+	analysis := ARM64Analysis{
+		ResourceType:    resource.Type,
+		ResourceName:    resource.Name,
+		ARM64Compatible: true,
+	}
+
+	for _, instance := range resource.Instances {
+		if environment, exists := instance.Attributes["environment"]; exists {
+			envList := environment.([]any)
+			if len(envList) > 0 {
+				env := envList[0].(map[string]any)
+				if computeType, exists := env["compute_type"]; exists {
+					computeTypeStr := computeType.(string)
+					if isARM64ComputeType(computeTypeStr) {
+						analysis.CurrentArch = "ARM64"
+						analysis.RecommendedArch = "ARM64"
+						analysis.Notes = "既にARM64コンピュートタイプを使用"
+					} else if hasARM64ComputeTypeAlternative(computeTypeStr) {
+						analysis.CurrentArch = "X86_64"
+						analysis.RecommendedArch = getARM64ComputeTypeAlternative(computeTypeStr)
+						analysis.Notes = "ARM64コンピュートタイプに変更可能: " + analysis.RecommendedArch
+					} else {
+						analysis.CurrentArch = "X86_64"
+						analysis.ARM64Compatible = false
+						analysis.Notes = "ARM64対応コンピュートタイプなし"
+					}
+				}
+			}
+		}
+	}
+	return analysis
+}
+
+func isARM64ComputeType(computeType string) bool {
+	arm64Types := []string{
+		"BUILD_GENERAL1_SMALL_ARM",
+		"BUILD_GENERAL1_MEDIUM_ARM", 
+		"BUILD_GENERAL1_LARGE_ARM",
+		"BUILD_GENERAL1_2XLARGE_ARM",
+	}
+	
+	for _, armType := range arm64Types {
+		if computeType == armType {
+			return true
+		}
+	}
+	return false
+}
+
+func hasARM64ComputeTypeAlternative(computeType string) bool {
+	_, exists := getX86ToArm64ComputeTypeMap()[computeType]
+	return exists
+}
+
+func getARM64ComputeTypeAlternative(computeType string) string {
+	return getX86ToArm64ComputeTypeMap()[computeType]
+}
+
+func getX86ToArm64ComputeTypeMap() map[string]string {
+	return map[string]string{
+		"BUILD_GENERAL1_SMALL":    "BUILD_GENERAL1_SMALL_ARM",
+		"BUILD_GENERAL1_MEDIUM":   "BUILD_GENERAL1_MEDIUM_ARM",
+		"BUILD_GENERAL1_LARGE":    "BUILD_GENERAL1_LARGE_ARM", 
+		"BUILD_GENERAL1_2XLARGE":  "BUILD_GENERAL1_2XLARGE_ARM",
+	}
+}

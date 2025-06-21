@@ -19,3 +19,5 @@ go.work
 
 # Build output
 tf-arm
+
+/.claude
