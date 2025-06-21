@@ -1,0 +1,63 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "t3.medium",
+            "ami": "ami-0abcdef1234567890",
+            "availability_zone": "us-west-2a"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed", 
+      "type": "aws_launch_template",
+      "name": "app_template",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "m5.large",
+            "image_id": "ami-0abcdef1234567890"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_lambda_function", 
+      "name": "processor",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "function_name": "data-processor",
+            "runtime": "python3.9"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_ecs_task_definition",
+      "name": "api_task",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]", 
+      "instances": [
+        {
+          "attributes": {
+            "family": "api-service",
+            "cpu": "256",
+            "memory": "512"
+          }
+        }
+      ]
+    }
+  ]
+}

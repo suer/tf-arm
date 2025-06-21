@@ -1,0 +1,25 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_codebuild_project",
+      "name": "build_project",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "name": "my-build-project",
+            "environment": [
+              {
+                "compute_type": "BUILD_GENERAL1_MEDIUM",
+                "image": "aws/codebuild/amazonlinux2-x86_64-standard:3.0",
+                "type": "LINUX_CONTAINER"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
