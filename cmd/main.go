@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/suer/tf-arm/internal/analyzer"
@@ -68,9 +69,11 @@ func main() {
 
 type JSONOutput struct {
 	Summary struct {
-		TotalAnalyzed     int     `json:"total_analyzed"`
-		ARM64Compatible   int     `json:"arm64_compatible"`
-		CompatibilityRate float64 `json:"compatibility_rate"`
+		TotalAnalyzed              int     `json:"total_analyzed"`
+		ARM64Compatible            int     `json:"arm64_compatible"`
+		NonArm64Compatible         int     `json:"non_arm64_compatible"`
+		CompatibilityRate          float64 `json:"compatibility_rate"`
+		NonArm64CompatiblePercent  float64 `json:"non_arm64_compatible_percent"`
 	} `json:"summary"`
 	Resources []analyzer.ARM64Analysis `json:"resources"`
 }
@@ -83,6 +86,7 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 	}
 
 	var arm64CompatibleCount int
+	var nonArm64CompatibleCount int
 	var totalAnalyzedCount int
 	var analyses []analyzer.ARM64Analysis
 
@@ -99,6 +103,10 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 
 			if analysis.ARM64Compatible {
 				arm64CompatibleCount++
+				// Check if resource is ARM64-compatible but not currently using ARM64
+				if analysis.CurrentArch != "ARM64" && !strings.Contains(analysis.Notes, "Already using ARM64") {
+					nonArm64CompatibleCount++
+				}
 			}
 		}
 	}
@@ -109,8 +117,12 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 		}
 		output.Summary.TotalAnalyzed = totalAnalyzedCount
 		output.Summary.ARM64Compatible = arm64CompatibleCount
+		output.Summary.NonArm64Compatible = nonArm64CompatibleCount
 		if totalAnalyzedCount > 0 {
 			output.Summary.CompatibilityRate = float64(arm64CompatibleCount) / float64(totalAnalyzedCount) * 100
+		}
+		if arm64CompatibleCount > 0 {
+			output.Summary.NonArm64CompatiblePercent = float64(nonArm64CompatibleCount) / float64(arm64CompatibleCount) * 100
 		}
 
 		jsonData, err := json.Marshal(output)
@@ -131,10 +143,10 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 			rep.PrintAnalysis(analysis)
 		}
 
-		rep.PrintSummary(totalAnalyzedCount, arm64CompatibleCount)
+		rep.PrintSummary(totalAnalyzedCount, arm64CompatibleCount, nonArm64CompatibleCount)
 	}
 
-	if exitCode != 0 && arm64CompatibleCount > 0 {
+	if exitCode != 0 && nonArm64CompatibleCount > 0 {
 		os.Exit(exitCode)
 	}
 }

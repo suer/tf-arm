@@ -38,23 +38,6 @@
     },
     {
       "mode": "managed",
-      "type": "aws_rds_cluster",
-      "name": "arm64_aurora_cluster",
-      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
-      "instances": [
-        {
-          "attributes": {
-            "cluster_identifier": "arm64-aurora-cluster",
-            "engine": "aurora-mysql",
-            "engine_version": "8.0.mysql_aurora.3.02.0",
-            "database_name": "arm64aurora",
-            "master_username": "admin"
-          }
-        }
-      ]
-    },
-    {
-      "mode": "managed",
       "type": "aws_elasticache_cluster",
       "name": "arm64_cache",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
