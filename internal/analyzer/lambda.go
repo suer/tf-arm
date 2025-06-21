@@ -21,16 +21,16 @@ func (a *LambdaAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysi
 			if len(archList) > 0 && archList[0] == "arm64" {
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "既にARM64アーキテクチャを使用"
+				analysis.Notes = "Already using ARM64 architecture"
 			} else {
 				analysis.CurrentArch = "X86_64"
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "architectures = [\"arm64\"] に変更可能"
+				analysis.Notes = "Can change architectures to [\"arm64\"]"
 			}
 		} else {
-			analysis.CurrentArch = "X86_64 (デフォルト)"
+			analysis.CurrentArch = "X86_64 (default)"
 			analysis.RecommendedArch = "ARM64"
-			analysis.Notes = "architectures = [\"arm64\"] を追加可能"
+			analysis.Notes = "Can add architectures = [\"arm64\"]"
 		}
 	}
 	return analysis

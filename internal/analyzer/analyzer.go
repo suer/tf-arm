@@ -35,7 +35,7 @@ func AnalyzeResource(resource parser.TerraformResource) ARM64Analysis {
 			ResourceType:    resource.Type,
 			ResourceName:    resource.Name,
 			ARM64Compatible: false,
-			Notes:           "リソースタイプはARM64互換性チェック対象外",
+			Notes:           "Resource type not supported for ARM64 compatibility check",
 		}
 	}
 

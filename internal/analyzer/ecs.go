@@ -20,16 +20,16 @@ func (a *ECSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 			if cpuArch == "ARM64" {
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "既にARM64アーキテクチャを使用"
+				analysis.Notes = "Already using ARM64 architecture"
 			} else {
 				analysis.CurrentArch = "X86_64"
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "cpu_architectureをARM64に変更可能"
+				analysis.Notes = "Can change cpu_architecture to ARM64"
 			}
 		} else {
-			analysis.CurrentArch = "X86_64 (デフォルト)"
+			analysis.CurrentArch = "X86_64 (default)"
 			analysis.RecommendedArch = "ARM64"
-			analysis.Notes = "cpu_architecture = \"ARM64\" を追加可能"
+			analysis.Notes = "Can add cpu_architecture = \"ARM64\""
 		}
 	}
 	return analysis

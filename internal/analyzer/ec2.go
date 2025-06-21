@@ -28,13 +28,13 @@ func (a *EC2Analyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 			if isARM64InstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "既にARM64インスタンスタイプを使用"
+				analysis.Notes = "Already using ARM64 instance type"
 			} else if hasARM64Alternative(instanceTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.RecommendedArch = getARM64Alternative(instanceTypeStr)
-				analysis.Notes = fmt.Sprintf("ARM64インスタンスタイプ %s に変更可能", analysis.RecommendedArch)
+				analysis.Notes = fmt.Sprintf("Can migrate to ARM64 instance type %s", analysis.RecommendedArch)
 			} else {
-				analysis.Notes = "ARM64対応インスタンスタイプなし"
+				analysis.Notes = "No ARM64 compatible instance type available"
 			}
 		}
 	}
@@ -62,11 +62,11 @@ func (a *LaunchTemplateAnalyzer) Analyze(resource parser.TerraformResource) ARM6
 			if isARM64InstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.RecommendedArch = "ARM64"
-				analysis.Notes = "既にARM64インスタンスタイプを使用"
+				analysis.Notes = "Already using ARM64 instance type"
 			} else if hasARM64Alternative(instanceTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.RecommendedArch = getARM64Alternative(instanceTypeStr)
-				analysis.Notes = fmt.Sprintf("ARM64インスタンスタイプ %s に変更可能", analysis.RecommendedArch)
+				analysis.Notes = fmt.Sprintf("Can migrate to ARM64 instance type %s", analysis.RecommendedArch)
 			}
 		}
 	}

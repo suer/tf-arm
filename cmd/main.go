@@ -43,7 +43,7 @@ func main() {
 
 		analysis := analyzer.AnalyzeResource(resource)
 
-		if analysis.Notes != "リソースタイプはARM64互換性チェック対象外" {
+		if analysis.Notes != "Resource type not supported for ARM64 compatibility check" {
 			totalAnalyzedCount++
 			rep.PrintAnalysis(analysis)
 

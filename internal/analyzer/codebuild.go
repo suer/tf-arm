@@ -25,15 +25,15 @@ func (a *CodeBuildAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 					if isARM64ComputeType(computeTypeStr) {
 						analysis.CurrentArch = "ARM64"
 						analysis.RecommendedArch = "ARM64"
-						analysis.Notes = "既にARM64コンピュートタイプを使用"
+						analysis.Notes = "Already using ARM64 compute type"
 					} else if hasARM64ComputeTypeAlternative(computeTypeStr) {
 						analysis.CurrentArch = "X86_64"
 						analysis.RecommendedArch = getARM64ComputeTypeAlternative(computeTypeStr)
-						analysis.Notes = "ARM64コンピュートタイプに変更可能: " + analysis.RecommendedArch
+						analysis.Notes = "Can migrate to ARM64 compute type: " + analysis.RecommendedArch
 					} else {
 						analysis.CurrentArch = "X86_64"
 						analysis.ARM64Compatible = false
-						analysis.Notes = "ARM64対応コンピュートタイプなし"
+						analysis.Notes = "No ARM64 compatible compute type available"
 					}
 				}
 			}
