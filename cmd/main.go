@@ -12,7 +12,7 @@ import (
 	"github.com/suer/tf-arm/internal/reporter"
 )
 
-var version = "1.0.0"
+var version = "dev"
 var showVersion bool
 var outputFormat string
 var exitCode int
