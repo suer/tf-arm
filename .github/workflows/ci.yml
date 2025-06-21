@@ -25,6 +25,12 @@ jobs:
 
     - name: Test with example files
       run: |
-        ./tf-arm example_state.json
-        ./tf-arm example_codebuild.json
-        ./tf-arm example_comprehensive.json
+        echo "Testing all example files..."
+        for file in examples/*.json *.json; do
+          if [ -f "$file" ]; then
+            echo "Testing $file..."
+            ./tf-arm "$file"
+            echo ""
+          fi
+        done
+        echo "All example tests passed!"

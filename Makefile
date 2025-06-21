@@ -46,9 +46,15 @@ install: build
 
 # Run example tests
 test-examples: build
-	./tf-arm example_state.json
-	./tf-arm example_codebuild.json
-	./tf-arm example_comprehensive.json
+	@echo "Testing all example files..."
+	@for file in examples/*.json *.json; do \
+		if [ -f "$$file" ]; then \
+			echo "Testing $$file..."; \
+			./tf-arm "$$file" || exit 1; \
+			echo ""; \
+		fi; \
+	done
+	@echo "All example tests passed!"
 
 # Development setup
 dev-setup:
