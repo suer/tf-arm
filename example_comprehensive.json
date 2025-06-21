@@ -1,0 +1,126 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "t3.medium",
+            "ami": "ami-0abcdef1234567890"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "main_db",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_class": "db.t3.micro",
+            "engine": "mysql"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_rds_cluster",
+      "name": "aurora_cluster",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "engine": "aurora-mysql",
+            "engine_version": "8.0.mysql_aurora.3.02.0"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_elasticache_cluster",
+      "name": "redis_cache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "node_type": "cache.t3.micro",
+            "engine": "redis"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_eks_node_group",
+      "name": "worker_nodes",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_types": ["m5.large"],
+            "ami_type": "AL2_x86_64"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_emr_cluster",
+      "name": "data_processing",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "master_instance_group": [
+              {
+                "instance_type": "m5.xlarge"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_opensearch_domain",
+      "name": "search_cluster",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_config": [
+              {
+                "instance_type": "t3.small.search"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_sagemaker_endpoint_configuration",
+      "name": "ml_endpoint",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "production_variants": [
+              {
+                "instance_type": "ml.m5.large"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
