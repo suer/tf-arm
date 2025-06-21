@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version-file: go.mod
+
+    - name: Build
+      run: |
+        go build -o tf-arm ./cmd
+
+    - name: Test
+      run: |
+        go test -v ./...
+
+    - name: Test with example files
+      run: |
+        ./tf-arm example_state.json
+        ./tf-arm example_codebuild.json
+        ./tf-arm example_comprehensive.json
