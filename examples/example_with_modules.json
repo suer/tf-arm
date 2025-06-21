@@ -1,0 +1,49 @@
+{
+  "version": 4,
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "web_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "t3.medium",
+            "ami": "ami-0abcdef1234567890"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "app_server",
+      "module": "module.web_tier",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "m5.large",
+            "ami": "ami-0abcdef1234567890"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "database",
+      "module": "module.database",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_class": "db.t3.micro",
+            "engine": "mysql"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import "github.com/suer/tf-arm/internal/parser"
 type ARM64Analysis struct {
 	ResourceType    string
 	ResourceName    string
+	FullAddress     string
 	CurrentArch     string
 	ARM64Compatible bool
 	RecommendedArch string
@@ -58,10 +59,13 @@ func AnalyzeResource(resource parser.TerraformResource) ARM64Analysis {
 		return ARM64Analysis{
 			ResourceType:    resource.Type,
 			ResourceName:    resource.Name,
+			FullAddress:     resource.GetFullAddress(),
 			ARM64Compatible: false,
 			Notes:           "Resource type not supported for ARM64 compatibility check",
 		}
 	}
 
-	return analyzer.Analyze(resource)
+	analysis := analyzer.Analyze(resource)
+	analysis.FullAddress = resource.GetFullAddress()
+	return analysis
 }

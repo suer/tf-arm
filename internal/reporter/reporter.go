@@ -14,7 +14,7 @@ func New() *Reporter {
 }
 
 func (r *Reporter) PrintAnalysis(analysis analyzer.ARM64Analysis) {
-	fmt.Printf("Resource: %s.%s\n", analysis.ResourceType, analysis.ResourceName)
+	fmt.Printf("Resource: %s\n", analysis.FullAddress)
 	fmt.Printf("  Current Architecture: %s\n", analysis.CurrentArch)
 	fmt.Printf("  ARM64 Compatible: %v\n", analysis.ARM64Compatible)
 	if analysis.ARM64Compatible && analysis.RecommendedArch != "" {

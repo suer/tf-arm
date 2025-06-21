@@ -15,12 +15,21 @@ type TerraformResource struct {
 	Mode      string             `json:"mode"`
 	Type      string             `json:"type"`
 	Name      string             `json:"name"`
+	Module    string             `json:"module,omitempty"`
 	Provider  string             `json:"provider"`
 	Instances []ResourceInstance `json:"instances"`
 }
 
 type ResourceInstance struct {
 	Attributes map[string]any `json:"attributes"`
+}
+
+// GetFullAddress returns the full Terraform address for the resource
+func (r *TerraformResource) GetFullAddress() string {
+	if r.Module != "" {
+		return fmt.Sprintf("%s.%s.%s", r.Module, r.Type, r.Name)
+	}
+	return fmt.Sprintf("%s.%s", r.Type, r.Name)
 }
 
 func ParseStateFile(filename string) (*TerraformState, error) {
