@@ -20,6 +20,7 @@ func (a *LambdaAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysi
 			archList := architectures.([]any)
 			if len(archList) > 0 && archList[0] == "arm64" {
 				analysis.CurrentArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.RecommendedArch = "ARM64"
 				analysis.Notes = "Already using ARM64 architecture"
 			} else {

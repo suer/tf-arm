@@ -21,10 +21,11 @@ func (a *EKSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 			instanceTypesList := instanceTypes.([]any)
 			if len(instanceTypesList) > 0 {
 				instanceType := instanceTypesList[0].(string)
-				
+
 				if isARM64InstanceType(instanceType) {
 					analysis.CurrentArch = "ARM64"
 					analysis.RecommendedArch = "ARM64"
+					analysis.AlreadyUsingARM64 = true
 					analysis.Notes = "Already using ARM64 instance type"
 				} else if hasARM64Alternative(instanceType) {
 					analysis.RecommendedArch = getARM64Alternative(instanceType)
@@ -36,12 +37,13 @@ func (a *EKSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 		} else {
 			analysis.Notes = "Can specify ARM64 instance types for EKS node group"
 		}
-		
+
 		// Check AMI type
 		if amiType, exists := instance.Attributes["ami_type"]; exists {
 			amiTypeStr := amiType.(string)
 			if amiTypeStr == "AL2_ARM_64" {
 				analysis.CurrentArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 AMI type"
 			} else {
 				analysis.Notes += " | Consider using AL2_ARM_64 AMI type"

@@ -21,14 +21,15 @@ func (a *SageMakerAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 			variantsList := productionVariants.([]any)
 			if len(variantsList) > 0 {
 				variant := variantsList[0].(map[string]any)
-				
+
 				if instanceType, exists := variant["instance_type"]; exists {
 					instanceTypeStr := instanceType.(string)
-					
+
 					if isARM64SageMakerInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
 						analysis.CurrentArch = "ARM64"
 						analysis.RecommendedArch = "ARM64"
+						analysis.AlreadyUsingARM64 = true
 						analysis.Notes = "Already using ARM64 instance type"
 					} else if hasARM64SageMakerAlternative(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -61,11 +62,12 @@ func (a *GameLiftAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analy
 	for _, instance := range resource.Instances {
 		if ec2InstanceType, exists := instance.Attributes["ec2_instance_type"]; exists {
 			instanceTypeStr := ec2InstanceType.(string)
-			
+
 			if isARM64GameLiftInstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 instance type"
 			} else if hasARM64GameLiftAlternative(instanceTypeStr) {
 				analysis.ARM64Compatible = true
@@ -94,7 +96,7 @@ func isARM64SageMakerInstanceType(instanceType string) bool {
 		"ml.r6gd.large", "ml.r6gd.xlarge", "ml.r6gd.2xlarge", "ml.r6gd.4xlarge",
 		"ml.r6gd.8xlarge", "ml.r6gd.12xlarge", "ml.r6gd.16xlarge",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if instanceType == armType {
 			return true
@@ -147,7 +149,7 @@ func isARM64GameLiftInstanceType(instanceType string) bool {
 		"r6g.large", "r6g.xlarge", "r6g.2xlarge", "r6g.4xlarge",
 		"r6g.8xlarge", "r6g.12xlarge", "r6g.16xlarge",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if instanceType == armType {
 			return true

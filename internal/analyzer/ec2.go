@@ -27,6 +27,7 @@ func (a *EC2Analyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 			if isARM64InstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
+				analysis.AlreadyUsingARM64 = true
 				analysis.RecommendedArch = "ARM64"
 				analysis.Notes = "Already using ARM64 instance type"
 			} else if hasARM64Alternative(instanceTypeStr) {
@@ -61,6 +62,7 @@ func (a *LaunchTemplateAnalyzer) Analyze(resource parser.TerraformResource) ARM6
 
 			if isARM64InstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
+				analysis.AlreadyUsingARM64 = true
 				analysis.RecommendedArch = "ARM64"
 				analysis.Notes = "Already using ARM64 instance type"
 			} else if hasARM64Alternative(instanceTypeStr) {

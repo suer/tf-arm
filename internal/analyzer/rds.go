@@ -19,11 +19,12 @@ func (a *RDSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 	for _, instance := range resource.Instances {
 		if instanceClass, exists := instance.Attributes["instance_class"]; exists {
 			instanceClassStr := instanceClass.(string)
-			
+
 			if isARM64RDSInstanceClass(instanceClassStr) {
 				analysis.ARM64Compatible = true
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 instance class"
 			} else if hasARM64RDSAlternative(instanceClassStr) {
 				analysis.ARM64Compatible = true
@@ -54,7 +55,7 @@ func (a *AuroraAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysi
 	for _, instance := range resource.Instances {
 		if engine, exists := instance.Attributes["engine"]; exists {
 			engineStr := engine.(string)
-			
+
 			// Aurora supports ARM64 for MySQL and PostgreSQL
 			if engineStr == "aurora-mysql" || engineStr == "aurora-postgresql" {
 				analysis.ARM64Compatible = true
@@ -74,7 +75,7 @@ func isARM64RDSInstanceClass(instanceClass string) bool {
 		"db.r6g.large", "db.r6g.xlarge", "db.r6g.2xlarge", "db.r6g.4xlarge", "db.r6g.8xlarge", "db.r6g.12xlarge", "db.r6g.16xlarge",
 		"db.r6gd.large", "db.r6gd.xlarge", "db.r6gd.2xlarge", "db.r6gd.4xlarge", "db.r6gd.8xlarge", "db.r6gd.12xlarge", "db.r6gd.16xlarge",
 	}
-	
+
 	for _, armClass := range arm64Classes {
 		if instanceClass == armClass {
 			return true

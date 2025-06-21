@@ -3,13 +3,14 @@ package analyzer
 import "github.com/suer/tf-arm/internal/parser"
 
 type ARM64Analysis struct {
-	ResourceType    string
-	ResourceName    string
-	FullAddress     string
-	CurrentArch     string
-	ARM64Compatible bool
-	RecommendedArch string
-	Notes           string
+	ResourceType      string
+	ResourceName      string
+	FullAddress       string
+	CurrentArch       string
+	ARM64Compatible   bool
+	AlreadyUsingARM64 bool
+	RecommendedArch   string
+	Notes             string
 }
 
 type Analyzer interface {

@@ -19,6 +19,7 @@ func (a *ECSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 		if cpuArch, exists := instance.Attributes["cpu_architecture"]; exists {
 			if cpuArch == "ARM64" {
 				analysis.CurrentArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.RecommendedArch = "ARM64"
 				analysis.Notes = "Already using ARM64 architecture"
 			} else {

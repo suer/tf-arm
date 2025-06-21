@@ -23,11 +23,12 @@ func (a *EMRAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 				instanceGroup := instanceGroupList[0].(map[string]any)
 				if instanceType, exists := instanceGroup["instance_type"]; exists {
 					instanceTypeStr := instanceType.(string)
-					
+
 					if isARM64EMRInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
 						analysis.CurrentArch = "ARM64"
 						analysis.RecommendedArch = "ARM64"
+						analysis.AlreadyUsingARM64 = true
 						analysis.Notes = "Already using ARM64 instance type for master node"
 					} else if hasARM64EMRAlternative(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -63,6 +64,7 @@ func (a *EMRServerlessAnalyzer) Analyze(resource parser.TerraformResource) ARM64
 		if architecture, exists := instance.Attributes["architecture"]; exists {
 			if architecture == "ARM64" {
 				analysis.CurrentArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 architecture"
 			}
 		}
@@ -80,7 +82,7 @@ func isARM64EMRInstanceType(instanceType string) bool {
 		"r6g.xlarge", "r6g.2xlarge", "r6g.4xlarge", "r6g.8xlarge", "r6g.12xlarge", "r6g.16xlarge",
 		"r6gd.xlarge", "r6gd.2xlarge", "r6gd.4xlarge", "r6gd.8xlarge", "r6gd.12xlarge", "r6gd.16xlarge",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if instanceType == armType {
 			return true

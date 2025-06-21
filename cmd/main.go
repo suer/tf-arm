@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/suer/tf-arm/internal/analyzer"
@@ -19,11 +18,11 @@ var exitCode int
 
 type JSONOutput struct {
 	Summary struct {
-		TotalAnalyzed        int     `json:"total_analyzed"`
-		ARM64Compatible      int     `json:"arm64_compatible"`
-		Migrateable          int     `json:"migrateable"`
-		CompatibilityRate    float64 `json:"compatibility_rate"`
-		MigrateablePercent   float64 `json:"migrateable_percent"`
+		TotalAnalyzed      int     `json:"total_analyzed"`
+		ARM64Compatible    int     `json:"arm64_compatible"`
+		Migrateable        int     `json:"migrateable"`
+		CompatibilityRate  float64 `json:"compatibility_rate"`
+		MigrateablePercent float64 `json:"migrateable_percent"`
 	} `json:"summary"`
 	Resources []analyzer.ARM64Analysis `json:"resources"`
 }
@@ -79,9 +78,7 @@ func main() {
 }
 
 func isNonARM64Compatible(analysis analyzer.ARM64Analysis) bool {
-	return analysis.ARM64Compatible &&
-		analysis.CurrentArch != "ARM64" &&
-		!strings.Contains(analysis.Notes, "Already using ARM64")
+	return analysis.ARM64Compatible && !analysis.AlreadyUsingARM64
 }
 
 func calculateMigrateablePercent(migrateableCount, arm64CompatibleCount int) float64 {
@@ -90,7 +87,6 @@ func calculateMigrateablePercent(migrateableCount, arm64CompatibleCount int) flo
 	}
 	return float64(migrateableCount) / float64(arm64CompatibleCount) * 100
 }
-
 
 func analyzeStateFile(stateFile, format string, exitCode int) {
 	state, err := parser.ParseStateFile(stateFile)

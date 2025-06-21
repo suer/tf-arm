@@ -21,14 +21,15 @@ func (a *OpenSearchAnalyzer) Analyze(resource parser.TerraformResource) ARM64Ana
 			clusterConfigList := clusterConfig.([]any)
 			if len(clusterConfigList) > 0 {
 				config := clusterConfigList[0].(map[string]any)
-				
+
 				if instanceType, exists := config["instance_type"]; exists {
 					instanceTypeStr := instanceType.(string)
-					
+
 					if isARM64OpenSearchInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
 						analysis.CurrentArch = "ARM64"
 						analysis.RecommendedArch = "ARM64"
+						analysis.AlreadyUsingARM64 = true
 						analysis.Notes = "Already using ARM64 instance type"
 					} else if hasARM64OpenSearchAlternative(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -63,14 +64,15 @@ func (a *MSKAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 			brokerNodeList := brokerNodeGroupInfo.([]any)
 			if len(brokerNodeList) > 0 {
 				brokerNode := brokerNodeList[0].(map[string]any)
-				
+
 				if instanceType, exists := brokerNode["instance_type"]; exists {
 					instanceTypeStr := instanceType.(string)
-					
+
 					if isARM64MSKInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
 						analysis.CurrentArch = "ARM64"
 						analysis.RecommendedArch = "ARM64"
+						analysis.AlreadyUsingARM64 = true
 						analysis.Notes = "Already using ARM64 instance type"
 					} else if hasARM64MSKAlternative(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -98,7 +100,7 @@ func isARM64OpenSearchInstanceType(instanceType string) bool {
 		"r6gd.large.search", "r6gd.xlarge.search", "r6gd.2xlarge.search", "r6gd.4xlarge.search",
 		"r6gd.8xlarge.search", "r6gd.12xlarge.search", "r6gd.16xlarge.search",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if instanceType == armType {
 			return true
@@ -146,7 +148,7 @@ func isARM64MSKInstanceType(instanceType string) bool {
 		"kafka.m6g.large", "kafka.m6g.xlarge", "kafka.m6g.2xlarge", "kafka.m6g.4xlarge",
 		"kafka.m6g.8xlarge", "kafka.m6g.12xlarge", "kafka.m6g.16xlarge",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if instanceType == armType {
 			return true

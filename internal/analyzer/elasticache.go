@@ -19,11 +19,12 @@ func (a *ElastiCacheAnalyzer) Analyze(resource parser.TerraformResource) ARM64An
 	for _, instance := range resource.Instances {
 		if nodeType, exists := instance.Attributes["node_type"]; exists {
 			nodeTypeStr := nodeType.(string)
-			
+
 			if isARM64ElastiCacheNodeType(nodeTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 node type"
 			} else if hasARM64ElastiCacheAlternative(nodeTypeStr) {
 				analysis.ARM64Compatible = true
@@ -54,11 +55,12 @@ func (a *MemoryDBAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analy
 	for _, instance := range resource.Instances {
 		if nodeType, exists := instance.Attributes["node_type"]; exists {
 			nodeTypeStr := nodeType.(string)
-			
+
 			if isARM64MemoryDBNodeType(nodeTypeStr) {
 				analysis.ARM64Compatible = true
 				analysis.CurrentArch = "ARM64"
 				analysis.RecommendedArch = "ARM64"
+				analysis.AlreadyUsingARM64 = true
 				analysis.Notes = "Already using ARM64 node type"
 			} else if hasARM64MemoryDBAlternative(nodeTypeStr) {
 				analysis.ARM64Compatible = true
@@ -80,7 +82,7 @@ func isARM64ElastiCacheNodeType(nodeType string) bool {
 		"cache.r6gd.8xlarge", "cache.r6gd.12xlarge", "cache.r6gd.16xlarge",
 		"cache.t4g.nano", "cache.t4g.micro", "cache.t4g.small", "cache.t4g.medium",
 	}
-	
+
 	for _, armType := range arm64NodeTypes {
 		if nodeType == armType {
 			return true
@@ -122,7 +124,7 @@ func isARM64MemoryDBNodeType(nodeType string) bool {
 		"db.r6gd.8xlarge", "db.r6gd.12xlarge", "db.r6gd.16xlarge",
 		"db.t4g.small", "db.t4g.medium",
 	}
-	
+
 	for _, armType := range arm64NodeTypes {
 		if nodeType == armType {
 			return true

@@ -24,6 +24,7 @@ func (a *CodeBuildAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 					computeTypeStr := computeType.(string)
 					if isARM64ComputeType(computeTypeStr) {
 						analysis.CurrentArch = "ARM64"
+						analysis.AlreadyUsingARM64 = true
 						analysis.RecommendedArch = "ARM64"
 						analysis.Notes = "Already using ARM64 compute type"
 					} else if hasARM64ComputeTypeAlternative(computeTypeStr) {
@@ -45,11 +46,11 @@ func (a *CodeBuildAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 func isARM64ComputeType(computeType string) bool {
 	arm64Types := []string{
 		"BUILD_GENERAL1_SMALL_ARM",
-		"BUILD_GENERAL1_MEDIUM_ARM", 
+		"BUILD_GENERAL1_MEDIUM_ARM",
 		"BUILD_GENERAL1_LARGE_ARM",
 		"BUILD_GENERAL1_2XLARGE_ARM",
 	}
-	
+
 	for _, armType := range arm64Types {
 		if computeType == armType {
 			return true
