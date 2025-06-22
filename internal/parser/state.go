@@ -21,7 +21,7 @@ type TerraformResource struct {
 }
 
 type ResourceInstance struct {
-	Attributes map[string]any `json:"attributes"`
+	Attributes map[string]interface{} `json:"attributes"`
 }
 
 // GetFullAddress returns the full Terraform address for the resource
