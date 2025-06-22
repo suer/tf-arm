@@ -3,6 +3,7 @@ package parser
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 )
 
@@ -37,17 +38,28 @@ func ParseStateFile(filename string) (*TerraformState, error) {
 		return nil, fmt.Errorf("filename cannot be empty")
 	}
 
-	data, err := os.ReadFile(filename)
+	fileInfo, err := os.Stat(filename)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read state file: %w", err)
+		return nil, fmt.Errorf("failed to stat state file: %w", err)
 	}
 
-	if len(data) == 0 {
+	if fileInfo.Size() == 0 {
 		return nil, fmt.Errorf("state file is empty")
 	}
 
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open state file: %w", err)
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	
 	var state TerraformState
-	if err := json.Unmarshal(data, &state); err != nil {
+	if err := decoder.Decode(&state); err != nil {
+		if err == io.EOF {
+			return nil, fmt.Errorf("state file is empty or invalid JSON")
+		}
 		return nil, fmt.Errorf("failed to parse JSON: %w", err)
 	}
 
