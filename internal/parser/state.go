@@ -33,14 +33,27 @@ func (r *TerraformResource) GetFullAddress() string {
 }
 
 func ParseStateFile(filename string) (*TerraformState, error) {
+	if filename == "" {
+		return nil, fmt.Errorf("filename cannot be empty")
+	}
+
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read state file: %w", err)
 	}
 
+	if len(data) == 0 {
+		return nil, fmt.Errorf("state file is empty")
+	}
+
 	var state TerraformState
 	if err := json.Unmarshal(data, &state); err != nil {
 		return nil, fmt.Errorf("failed to parse JSON: %w", err)
+	}
+
+	// Basic validation of parsed state
+	if state.Version == 0 {
+		return nil, fmt.Errorf("invalid state file: version is missing or zero")
 	}
 
 	return &state, nil
