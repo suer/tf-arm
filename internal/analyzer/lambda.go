@@ -17,7 +17,10 @@ func (a *LambdaAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysi
 
 	for _, instance := range resource.Instances {
 		if architectures, exists := instance.Attributes["architectures"]; exists {
-			archList := architectures.([]any)
+			archList, ok := architectures.([]any)
+			if !ok {
+				continue
+			}
 			if len(archList) > 0 && archList[0] == "arm64" {
 				analysis.CurrentArch = "ARM64"
 				analysis.AlreadyUsingARM64 = true

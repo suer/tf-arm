@@ -18,7 +18,10 @@ func (a *ElastiCacheAnalyzer) Analyze(resource parser.TerraformResource) ARM64An
 
 	for _, instance := range resource.Instances {
 		if nodeType, exists := instance.Attributes["node_type"]; exists {
-			nodeTypeStr := nodeType.(string)
+			nodeTypeStr, ok := nodeType.(string)
+			if !ok {
+				continue
+			}
 
 			if isARM64ElastiCacheNodeType(nodeTypeStr) {
 				analysis.ARM64Compatible = true
@@ -54,7 +57,10 @@ func (a *MemoryDBAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analy
 
 	for _, instance := range resource.Instances {
 		if nodeType, exists := instance.Attributes["node_type"]; exists {
-			nodeTypeStr := nodeType.(string)
+			nodeTypeStr, ok := nodeType.(string)
+			if !ok {
+				continue
+			}
 
 			if isARM64MemoryDBNodeType(nodeTypeStr) {
 				analysis.ARM64Compatible = true

@@ -1,6 +1,10 @@
 package analyzer
 
-import "github.com/suer/tf-arm/internal/parser"
+import (
+	"slices"
+
+	"github.com/suer/tf-arm/internal/parser"
+)
 
 type CodeBuildAnalyzer struct{}
 
@@ -17,11 +21,20 @@ func (a *CodeBuildAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 
 	for _, instance := range resource.Instances {
 		if environment, exists := instance.Attributes["environment"]; exists {
-			envList := environment.([]any)
+			envList, ok := environment.([]any)
+			if !ok {
+				continue
+			}
 			if len(envList) > 0 {
-				env := envList[0].(map[string]any)
+				env, ok := envList[0].(map[string]any)
+				if !ok {
+					continue
+				}
 				if computeType, exists := env["compute_type"]; exists {
-					computeTypeStr := computeType.(string)
+					computeTypeStr, ok := computeType.(string)
+					if !ok {
+						continue
+					}
 					if isARM64ComputeType(computeTypeStr) {
 						analysis.CurrentArch = "ARM64"
 						analysis.AlreadyUsingARM64 = true
@@ -51,12 +64,7 @@ func isARM64ComputeType(computeType string) bool {
 		"BUILD_GENERAL1_2XLARGE_ARM",
 	}
 
-	for _, armType := range arm64Types {
-		if computeType == armType {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(arm64Types, computeType)
 }
 
 func hasARM64ComputeTypeAlternative(computeType string) bool {

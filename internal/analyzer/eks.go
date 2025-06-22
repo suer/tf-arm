@@ -18,9 +18,15 @@ func (a *EKSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 	for _, instance := range resource.Instances {
 		if instanceTypes, exists := instance.Attributes["instance_types"]; exists {
-			instanceTypesList := instanceTypes.([]any)
+			instanceTypesList, ok := instanceTypes.([]any)
+			if !ok {
+				continue
+			}
 			if len(instanceTypesList) > 0 {
-				instanceType := instanceTypesList[0].(string)
+				instanceType, ok := instanceTypesList[0].(string)
+				if !ok {
+					continue
+				}
 
 				if isARM64InstanceType(instanceType) {
 					analysis.CurrentArch = "ARM64"
@@ -40,7 +46,10 @@ func (a *EKSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 		// Check AMI type
 		if amiType, exists := instance.Attributes["ami_type"]; exists {
-			amiTypeStr := amiType.(string)
+			amiTypeStr, ok := amiType.(string)
+			if !ok {
+				continue
+			}
 			if amiTypeStr == "AL2_ARM_64" {
 				analysis.CurrentArch = "ARM64"
 				analysis.AlreadyUsingARM64 = true
@@ -79,9 +88,15 @@ func (a *FargateAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analys
 		} else {
 			// Check if using capacity provider strategy for Fargate
 			if capacityProviderStrategy, exists := instance.Attributes["capacity_provider_strategy"]; exists {
-				strategies := capacityProviderStrategy.([]any)
+				strategies, ok := capacityProviderStrategy.([]any)
+				if !ok {
+					continue
+				}
 				for _, strategy := range strategies {
-					strategyMap := strategy.(map[string]any)
+					strategyMap, ok := strategy.(map[string]any)
+					if !ok {
+						continue
+					}
 					if provider, exists := strategyMap["capacity_provider"]; exists {
 						if provider == "FARGATE" || provider == "FARGATE_SPOT" {
 							analysis.Notes = "Using Fargate capacity provider. Check task definition cpu_architecture"

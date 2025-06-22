@@ -22,7 +22,10 @@ func (a *EC2Analyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 	for _, instance := range resource.Instances {
 		if instanceType, exists := instance.Attributes["instance_type"]; exists {
-			instanceTypeStr := instanceType.(string)
+			instanceTypeStr, ok := instanceType.(string)
+			if !ok {
+				continue
+			}
 			analysis.CurrentArch = getArchFromInstanceType(instanceTypeStr)
 
 			if isARM64InstanceType(instanceTypeStr) {
@@ -57,7 +60,10 @@ func (a *LaunchTemplateAnalyzer) Analyze(resource parser.TerraformResource) ARM6
 
 	for _, instance := range resource.Instances {
 		if instanceType, exists := instance.Attributes["instance_type"]; exists {
-			instanceTypeStr := instanceType.(string)
+			instanceTypeStr, ok := instanceType.(string)
+			if !ok {
+				continue
+			}
 			analysis.CurrentArch = getArchFromInstanceType(instanceTypeStr)
 
 			if isARM64InstanceType(instanceTypeStr) {

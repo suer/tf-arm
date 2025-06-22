@@ -18,7 +18,10 @@ func (a *RDSAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 	for _, instance := range resource.Instances {
 		if instanceClass, exists := instance.Attributes["instance_class"]; exists {
-			instanceClassStr := instanceClass.(string)
+			instanceClassStr, ok := instanceClass.(string)
+			if !ok {
+				continue
+			}
 
 			if isARM64RDSInstanceClass(instanceClassStr) {
 				analysis.ARM64Compatible = true
@@ -54,7 +57,10 @@ func (a *AuroraAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysi
 
 	for _, instance := range resource.Instances {
 		if engine, exists := instance.Attributes["engine"]; exists {
-			engineStr := engine.(string)
+			engineStr, ok := engine.(string)
+			if !ok {
+				continue
+			}
 
 			// Aurora supports ARM64 for MySQL and PostgreSQL
 			if engineStr == "aurora-mysql" || engineStr == "aurora-postgresql" {

@@ -18,11 +18,20 @@ func (a *EMRAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 	for _, instance := range resource.Instances {
 		if instanceGroups, exists := instance.Attributes["master_instance_group"]; exists {
-			instanceGroupList := instanceGroups.([]any)
+			instanceGroupList, ok := instanceGroups.([]any)
+			if !ok {
+				continue
+			}
 			if len(instanceGroupList) > 0 {
-				instanceGroup := instanceGroupList[0].(map[string]any)
+				instanceGroup, ok := instanceGroupList[0].(map[string]any)
+				if !ok {
+					continue
+				}
 				if instanceType, exists := instanceGroup["instance_type"]; exists {
-					instanceTypeStr := instanceType.(string)
+					instanceTypeStr, ok := instanceType.(string)
+					if !ok {
+						continue
+					}
 
 					if isARM64EMRInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true

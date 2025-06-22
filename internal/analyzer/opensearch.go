@@ -18,12 +18,21 @@ func (a *OpenSearchAnalyzer) Analyze(resource parser.TerraformResource) ARM64Ana
 
 	for _, instance := range resource.Instances {
 		if clusterConfig, exists := instance.Attributes["cluster_config"]; exists {
-			clusterConfigList := clusterConfig.([]any)
+			clusterConfigList, ok := clusterConfig.([]any)
+			if !ok {
+				continue
+			}
 			if len(clusterConfigList) > 0 {
-				config := clusterConfigList[0].(map[string]any)
+				config, ok := clusterConfigList[0].(map[string]any)
+				if !ok {
+					continue
+				}
 
 				if instanceType, exists := config["instance_type"]; exists {
-					instanceTypeStr := instanceType.(string)
+					instanceTypeStr, ok := instanceType.(string)
+					if !ok {
+						continue
+					}
 
 					if isARM64OpenSearchInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -61,12 +70,21 @@ func (a *MSKAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analysis {
 
 	for _, instance := range resource.Instances {
 		if brokerNodeGroupInfo, exists := instance.Attributes["broker_node_group_info"]; exists {
-			brokerNodeList := brokerNodeGroupInfo.([]any)
+			brokerNodeList, ok := brokerNodeGroupInfo.([]any)
+			if !ok {
+				continue
+			}
 			if len(brokerNodeList) > 0 {
-				brokerNode := brokerNodeList[0].(map[string]any)
+				brokerNode, ok := brokerNodeList[0].(map[string]any)
+				if !ok {
+					continue
+				}
 
 				if instanceType, exists := brokerNode["instance_type"]; exists {
-					instanceTypeStr := instanceType.(string)
+					instanceTypeStr, ok := instanceType.(string)
+					if !ok {
+						continue
+					}
 
 					if isARM64MSKInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true

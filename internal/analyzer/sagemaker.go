@@ -18,12 +18,21 @@ func (a *SageMakerAnalyzer) Analyze(resource parser.TerraformResource) ARM64Anal
 
 	for _, instance := range resource.Instances {
 		if productionVariants, exists := instance.Attributes["production_variants"]; exists {
-			variantsList := productionVariants.([]any)
+			variantsList, ok := productionVariants.([]any)
+			if !ok {
+				continue
+			}
 			if len(variantsList) > 0 {
-				variant := variantsList[0].(map[string]any)
+				variant, ok := variantsList[0].(map[string]any)
+				if !ok {
+					continue
+				}
 
 				if instanceType, exists := variant["instance_type"]; exists {
-					instanceTypeStr := instanceType.(string)
+					instanceTypeStr, ok := instanceType.(string)
+					if !ok {
+						continue
+					}
 
 					if isARM64SageMakerInstanceType(instanceTypeStr) {
 						analysis.ARM64Compatible = true
@@ -61,7 +70,10 @@ func (a *GameLiftAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analy
 
 	for _, instance := range resource.Instances {
 		if ec2InstanceType, exists := instance.Attributes["ec2_instance_type"]; exists {
-			instanceTypeStr := ec2InstanceType.(string)
+			instanceTypeStr, ok := ec2InstanceType.(string)
+			if !ok {
+				continue
+			}
 
 			if isARM64GameLiftInstanceType(instanceTypeStr) {
 				analysis.ARM64Compatible = true
