@@ -89,6 +89,15 @@ func calculateMigrateablePercent(migrateableCount, arm64CompatibleCount int) flo
 }
 
 func analyzeStateFile(stateFile, format string, exitCode int) {
+	// Validate file exists and is accessible
+	if _, err := os.Stat(stateFile); os.IsNotExist(err) {
+		fmt.Printf("Error: State file '%s' does not exist\n", stateFile)
+		os.Exit(1)
+	} else if err != nil {
+		fmt.Printf("Error accessing state file '%s': %v\n", stateFile, err)
+		os.Exit(1)
+	}
+
 	state, err := parser.ParseStateFile(stateFile)
 	if err != nil {
 		fmt.Printf("Error parsing state file: %v\n", err)
