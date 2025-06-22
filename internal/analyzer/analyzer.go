@@ -11,6 +11,7 @@ type ARM64Analysis struct {
 	AlreadyUsingARM64 bool
 	RecommendedArch   string
 	Notes             string
+	Supported         bool
 }
 
 type Analyzer interface {
@@ -63,10 +64,12 @@ func AnalyzeResource(resource parser.TerraformResource) ARM64Analysis {
 			FullAddress:     resource.GetFullAddress(),
 			ARM64Compatible: false,
 			Notes:           "Resource type not supported for ARM64 compatibility check",
+			Supported:       false,
 		}
 	}
 
 	analysis := analyzer.Analyze(resource)
 	analysis.FullAddress = resource.GetFullAddress()
+	analysis.Supported = true
 	return analysis
 }

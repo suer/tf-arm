@@ -107,7 +107,7 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 
 		analysis := analyzer.AnalyzeResource(resource)
 
-		if analysis.Notes != "Resource type not supported for ARM64 compatibility check" {
+		if analysis.Supported {
 			totalAnalyzedCount++
 			analyses = append(analyses, analysis)
 
