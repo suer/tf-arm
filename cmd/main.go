@@ -77,7 +77,7 @@ func main() {
 	}
 }
 
-func isNonARM64Compatible(analysis analyzer.ARM64Analysis) bool {
+func canMigrateToARM64(analysis analyzer.ARM64Analysis) bool {
 	return analysis.ARM64Compatible && !analysis.AlreadyUsingARM64
 }
 
@@ -114,7 +114,7 @@ func analyzeStateFile(stateFile, format string, exitCode int) {
 			if analysis.ARM64Compatible {
 				arm64CompatibleCount++
 				// Check if resource is ARM64-compatible but not currently using ARM64
-				if isNonARM64Compatible(analysis) {
+				if canMigrateToARM64(analysis) {
 					migrateableCount++
 				}
 			}
