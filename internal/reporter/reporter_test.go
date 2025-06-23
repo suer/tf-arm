@@ -124,7 +124,7 @@ func TestReporter_PrintSummary(t *testing.T) {
 				"ARM64 compatible resources: 6",
 				"Resources already using ARM64: 2",
 				"Resources that can migrate to ARM64: 4",
-				"Percentage of ARM64-capable resources not using ARM64: 66.7%",
+				"Percentage of ARM64-capable resources using ARM64: 33.3%",
 			},
 		},
 		{
@@ -151,7 +151,7 @@ func TestReporter_PrintSummary(t *testing.T) {
 				"ARM64 compatible resources: 3",
 				"Resources already using ARM64: 3",
 				"Resources that can migrate to ARM64: 0",
-				"Percentage of ARM64-capable resources not using ARM64: 0.0%",
+				"Percentage of ARM64-capable resources using ARM64: 100.0%",
 			},
 		},
 	}
