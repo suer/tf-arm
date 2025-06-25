@@ -82,11 +82,17 @@ func (a *MemoryDBAnalyzer) Analyze(resource parser.TerraformResource) ARM64Analy
 
 func isARM64ElastiCacheNodeType(nodeType string) bool {
 	arm64NodeTypes := []string{
+		// Graviton2
 		"cache.r6g.large", "cache.r6g.xlarge", "cache.r6g.2xlarge", "cache.r6g.4xlarge",
 		"cache.r6g.8xlarge", "cache.r6g.12xlarge", "cache.r6g.16xlarge",
 		"cache.r6gd.large", "cache.r6gd.xlarge", "cache.r6gd.2xlarge", "cache.r6gd.4xlarge",
 		"cache.r6gd.8xlarge", "cache.r6gd.12xlarge", "cache.r6gd.16xlarge",
 		"cache.t4g.nano", "cache.t4g.micro", "cache.t4g.small", "cache.t4g.medium",
+		// Graviton3
+		"cache.m7g.large", "cache.m7g.xlarge", "cache.m7g.2xlarge", "cache.m7g.4xlarge",
+		"cache.m7g.8xlarge", "cache.m7g.12xlarge", "cache.m7g.16xlarge",
+		"cache.r7g.large", "cache.r7g.xlarge", "cache.r7g.2xlarge", "cache.r7g.4xlarge",
+		"cache.r7g.8xlarge", "cache.r7g.12xlarge", "cache.r7g.16xlarge",
 	}
 
 	for _, armType := range arm64NodeTypes {
@@ -108,17 +114,27 @@ func getARM64ElastiCacheAlternative(nodeType string) string {
 
 func getElastiCacheX86ToArm64Map() map[string]string {
 	return map[string]string{
+		// T3 -> T4g (Graviton2)
 		"cache.t3.nano":     "cache.t4g.nano",
 		"cache.t3.micro":    "cache.t4g.micro",
 		"cache.t3.small":    "cache.t4g.small",
 		"cache.t3.medium":   "cache.t4g.medium",
-		"cache.r5.large":    "cache.r6g.large",
-		"cache.r5.xlarge":   "cache.r6g.xlarge",
-		"cache.r5.2xlarge":  "cache.r6g.2xlarge",
-		"cache.r5.4xlarge":  "cache.r6g.4xlarge",
-		"cache.r5.8xlarge":  "cache.r6g.8xlarge",
-		"cache.r5.12xlarge": "cache.r6g.12xlarge",
-		"cache.r5.16xlarge": "cache.r6g.16xlarge",
+		// M5 -> M7g (Graviton3 - better performance than M6g)
+		"cache.m5.large":    "cache.m7g.large",
+		"cache.m5.xlarge":   "cache.m7g.xlarge",
+		"cache.m5.2xlarge":  "cache.m7g.2xlarge",
+		"cache.m5.4xlarge":  "cache.m7g.4xlarge",
+		"cache.m5.8xlarge":  "cache.m7g.8xlarge",
+		"cache.m5.12xlarge": "cache.m7g.12xlarge",
+		"cache.m5.16xlarge": "cache.m7g.16xlarge",
+		// R5 -> R7g (Graviton3 - better performance than R6g)
+		"cache.r5.large":    "cache.r7g.large",
+		"cache.r5.xlarge":   "cache.r7g.xlarge",
+		"cache.r5.2xlarge":  "cache.r7g.2xlarge",
+		"cache.r5.4xlarge":  "cache.r7g.4xlarge",
+		"cache.r5.8xlarge":  "cache.r7g.8xlarge",
+		"cache.r5.12xlarge": "cache.r7g.12xlarge",
+		"cache.r5.16xlarge": "cache.r7g.16xlarge",
 	}
 }
 

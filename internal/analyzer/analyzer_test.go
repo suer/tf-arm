@@ -35,6 +35,50 @@ func TestAnalyzeResource(t *testing.T) {
 			},
 		},
 		{
+			name: "aws_instance with Graviton3 instance",
+			resource: parser.TerraformResource{
+				Type: "aws_instance",
+				Name: "graviton3_example",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_type": "m7g.large",
+						},
+					},
+				},
+			},
+			expectedType: "aws_instance",
+			expected: func(analysis ARM64Analysis) bool {
+				return analysis.ResourceType == "aws_instance" &&
+					analysis.ResourceName == "graviton3_example" &&
+					analysis.Supported == true &&
+					analysis.ARM64Compatible == true &&
+					analysis.AlreadyUsingARM64 == true
+			},
+		},
+		{
+			name: "aws_instance with Graviton4 instance",
+			resource: parser.TerraformResource{
+				Type: "aws_instance",
+				Name: "graviton4_example",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_type": "c8g.xlarge",
+						},
+					},
+				},
+			},
+			expectedType: "aws_instance",
+			expected: func(analysis ARM64Analysis) bool {
+				return analysis.ResourceType == "aws_instance" &&
+					analysis.ResourceName == "graviton4_example" &&
+					analysis.Supported == true &&
+					analysis.ARM64Compatible == true &&
+					analysis.AlreadyUsingARM64 == true
+			},
+		},
+		{
 			name: "aws_lambda_function resource",
 			resource: parser.TerraformResource{
 				Type: "aws_lambda_function",
@@ -94,6 +138,27 @@ func TestAnalyzeResource(t *testing.T) {
 				return analysis.ResourceType == "aws_db_instance" &&
 					analysis.ResourceName == "database" &&
 					analysis.Supported == true
+			},
+		},
+		{
+			name: "aws_db_instance with Graviton3 instance",
+			resource: parser.TerraformResource{
+				Type: "aws_db_instance",
+				Name: "graviton3_db",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_class": "db.m7g.large",
+						},
+					},
+				},
+			},
+			expectedType: "aws_db_instance",
+			expected: func(analysis ARM64Analysis) bool {
+				return analysis.ResourceType == "aws_db_instance" &&
+					analysis.ResourceName == "graviton3_db" &&
+					analysis.Supported == true &&
+					analysis.AlreadyUsingARM64 == true
 			},
 		},
 		{

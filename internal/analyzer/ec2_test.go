@@ -42,6 +42,40 @@ func TestEC2Analyzer_Analyze(t *testing.T) {
 			expectNotes: "Can migrate to ARM64 instance type t4g.micro",
 		},
 		{
+			name: "m7g instance already ARM64",
+			resource: parser.TerraformResource{
+				Type: "aws_instance",
+				Name: "graviton3_example",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_type": "m7g.medium",
+						},
+					},
+				},
+			},
+			expectARM64: true,
+			expectUsing: true,
+			expectNotes: "Already using ARM64 instance type",
+		},
+		{
+			name: "c8g instance already ARM64 (Graviton4)",
+			resource: parser.TerraformResource{
+				Type: "aws_instance",
+				Name: "graviton4_example",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_type": "c8g.large",
+						},
+					},
+				},
+			},
+			expectARM64: true,
+			expectUsing: true,
+			expectNotes: "Already using ARM64 instance type",
+		},
+		{
 			name: "ARM64 instance already in use",
 			resource: parser.TerraformResource{
 				Type: "aws_instance",
@@ -187,6 +221,22 @@ func TestLaunchTemplateAnalyzer_Analyze(t *testing.T) {
 			expectARM64: true,
 			expectUsing: true,
 		},
+		{
+			name: "launch template with Graviton3 instance",
+			resource: parser.TerraformResource{
+				Type: "aws_launch_template",
+				Name: "graviton3_example",
+				Instances: []parser.ResourceInstance{
+					{
+						Attributes: map[string]interface{}{
+							"instance_type": "r7g.xlarge",
+						},
+					},
+				},
+			},
+			expectARM64: true,
+			expectUsing: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -214,7 +264,9 @@ func TestIsARM64InstanceType(t *testing.T) {
 		instanceType string
 		expected     bool
 	}{
+		// Graviton1
 		{"a1.medium", true},
+		// Graviton2
 		{"t4g.micro", true},
 		{"m6g.large", true},
 		{"m6gd.xlarge", true},
@@ -224,6 +276,22 @@ func TestIsARM64InstanceType(t *testing.T) {
 		{"r6g.xlarge", true},
 		{"r6gd.2xlarge", true},
 		{"x2gd.medium", true},
+		// Graviton3
+		{"c7g.large", true},
+		{"c7gd.xlarge", true},
+		{"c7gn.2xlarge", true},
+		{"m7g.medium", true},
+		{"m7gd.large", true},
+		{"r7g.xlarge", true},
+		{"r7gd.2xlarge", true},
+		{"hpc7g.4xlarge", true},
+		// Graviton4
+		{"c8g.large", true},
+		{"m8g.xlarge", true},
+		{"r8g.2xlarge", true},
+		{"x8g.large", true},
+		{"i8g.xlarge", true},
+		// Non-ARM64
 		{"t3.micro", false},
 		{"m5.large", false},
 		{"c5.xlarge", false},
@@ -249,8 +317,11 @@ func TestHasARM64Alternative(t *testing.T) {
 		{"t3.micro", true},
 		{"t3.small", true},
 		{"m5.large", true},
+		{"m6i.large", true},
 		{"c5.xlarge", true},
+		{"c6i.xlarge", true},
 		{"r5.2xlarge", true},
+		{"r6i.2xlarge", true},
 		{"t2.micro", false},
 		{"i3.large", false},
 		{"unknown.type", false},
@@ -273,9 +344,12 @@ func TestGetARM64Alternative(t *testing.T) {
 	}{
 		{"t3.micro", "t4g.micro"},
 		{"t3.small", "t4g.small"},
-		{"m5.large", "m6g.large"},
-		{"c5.xlarge", "c6g.xlarge"},
-		{"r5.2xlarge", "r6g.2xlarge"},
+		{"m5.large", "m7g.large"},
+		{"m6i.large", "m8g.large"},
+		{"c5.xlarge", "c7g.xlarge"},
+		{"c6i.xlarge", "c8g.xlarge"},
+		{"r5.2xlarge", "r7g.2xlarge"},
+		{"r6i.2xlarge", "r8g.2xlarge"},
 	}
 
 	for _, tt := range tests {
@@ -293,9 +367,17 @@ func TestGetArchFromInstanceType(t *testing.T) {
 		instanceType string
 		expected     string
 	}{
+		// ARM64 instances
 		{"t4g.micro", "ARM64"},
 		{"m6g.large", "ARM64"},
 		{"c6g.xlarge", "ARM64"},
+		{"m7g.medium", "ARM64"},
+		{"c7g.large", "ARM64"},
+		{"r7g.xlarge", "ARM64"},
+		{"c8g.large", "ARM64"},
+		{"m8g.xlarge", "ARM64"},
+		{"r8g.2xlarge", "ARM64"},
+		// X86_64 instances
 		{"t3.micro", "X86_64"},
 		{"m5.large", "X86_64"},
 		{"c5.xlarge", "X86_64"},
@@ -319,10 +401,20 @@ func TestGetX86ToArm64Map(t *testing.T) {
 	}
 
 	expectedMappings := map[string]string{
+		// T3 -> T4g (Graviton2)
 		"t3.micro":    "t4g.micro",
-		"m5.large":    "m6g.large",
-		"c5.xlarge":   "c6g.xlarge",
-		"r5.2xlarge":  "r6g.2xlarge",
+		// M5 -> M7g (Graviton3)
+		"m5.large":    "m7g.large",
+		// M6i -> M8g (Graviton4)
+		"m6i.large":   "m8g.large",
+		// C5 -> C7g (Graviton3)
+		"c5.xlarge":   "c7g.xlarge",
+		// C6i -> C8g (Graviton4)
+		"c6i.xlarge":  "c8g.xlarge",
+		// R5 -> R7g (Graviton3)
+		"r5.2xlarge":  "r7g.2xlarge",
+		// R6i -> R8g (Graviton4)
+		"r6i.2xlarge": "r8g.2xlarge",
 	}
 
 	for x86Type, expectedArm64Type := range expectedMappings {

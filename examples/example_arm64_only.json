@@ -131,6 +131,74 @@
           }
         }
       ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "graviton3_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "m7g.large",
+            "ami": "ami-0abcdef1234567890",
+            "tags": {
+              "Name": "Graviton3 Server"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_instance",
+      "name": "graviton4_server",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "instance_type": "c8g.xlarge",
+            "ami": "ami-0abcdef1234567890",
+            "tags": {
+              "Name": "Graviton4 Server"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_db_instance",
+      "name": "graviton3_db",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "engine": "postgres",
+            "engine_version": "14",
+            "instance_class": "db.r7g.large",
+            "allocated_storage": 20,
+            "db_name": "graviton3db",
+            "username": "admin"
+          }
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "aws_elasticache_cluster",
+      "name": "graviton3_cache",
+      "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
+      "instances": [
+        {
+          "attributes": {
+            "cluster_id": "graviton3-cache",
+            "engine": "redis",
+            "node_type": "cache.r7g.large",
+            "num_cache_nodes": 1
+          }
+        }
+      ]
     }
   ]
 }

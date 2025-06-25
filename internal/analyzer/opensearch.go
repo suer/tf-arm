@@ -163,8 +163,12 @@ func getOpenSearchX86ToArm64Map() map[string]string {
 
 func isARM64MSKInstanceType(instanceType string) bool {
 	arm64Types := []string{
+		// Graviton2
 		"kafka.m6g.large", "kafka.m6g.xlarge", "kafka.m6g.2xlarge", "kafka.m6g.4xlarge",
 		"kafka.m6g.8xlarge", "kafka.m6g.12xlarge", "kafka.m6g.16xlarge",
+		// Graviton3
+		"kafka.m7g.large", "kafka.m7g.xlarge", "kafka.m7g.2xlarge", "kafka.m7g.4xlarge",
+		"kafka.m7g.8xlarge", "kafka.m7g.12xlarge", "kafka.m7g.16xlarge",
 	}
 
 	for _, armType := range arm64Types {
@@ -186,12 +190,13 @@ func getARM64MSKAlternative(instanceType string) string {
 
 func getMSKX86ToArm64Map() map[string]string {
 	return map[string]string{
-		"kafka.m5.large":    "kafka.m6g.large",
-		"kafka.m5.xlarge":   "kafka.m6g.xlarge",
-		"kafka.m5.2xlarge":  "kafka.m6g.2xlarge",
-		"kafka.m5.4xlarge":  "kafka.m6g.4xlarge",
-		"kafka.m5.8xlarge":  "kafka.m6g.8xlarge",
-		"kafka.m5.12xlarge": "kafka.m6g.12xlarge",
-		"kafka.m5.16xlarge": "kafka.m6g.16xlarge",
+		// M5 -> M7g (Graviton3 - better performance than M6g)
+		"kafka.m5.large":    "kafka.m7g.large",
+		"kafka.m5.xlarge":   "kafka.m7g.xlarge",
+		"kafka.m5.2xlarge":  "kafka.m7g.2xlarge",
+		"kafka.m5.4xlarge":  "kafka.m7g.4xlarge",
+		"kafka.m5.8xlarge":  "kafka.m7g.8xlarge",
+		"kafka.m5.12xlarge": "kafka.m7g.12xlarge",
+		"kafka.m5.16xlarge": "kafka.m7g.16xlarge",
 	}
 }
