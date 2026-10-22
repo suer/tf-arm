@@ -1,6 +1,6 @@
 module github.com/suer/tf-arm
 
-go 1.24.2
+go 1.27.3
 
 require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
